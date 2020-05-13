@@ -16,13 +16,15 @@ public class SerialConnectionTest {
 					CommPortIdentifier.getPortIdentifier(portName);
 			//포트가 사용중인지 체크
 			if(commPortIdentifier.isCurrentlyOwned()) {
-				System.out.println("포트를 사용할 수 없습니다.");
+				System.out.println("포트 사용할 수 없습니다.");
 			}else {
-				System.out.println("포트 사용가능");
+				System.out.println("포트 사용가능.");
 				//port가 사용 가능하면 포트를 열고 포트객체를 얻어오기
 				//매개변수1 : 포트를 열고 사용하는 프로그램의 이름(문자열)
 				//매개변수2 : 포트를 열고 통신하기 위해서 기다리는 시간(밀리세컨드)
-				CommPort commPort = commPortIdentifier.open("basic_serial", 3000);
+				CommPort commPort =
+						commPortIdentifier.open("basic_serial",
+								3000);
 				System.out.println(commPort);
 			}
 		} catch (NoSuchPortException e) {
@@ -32,6 +34,6 @@ public class SerialConnectionTest {
 		}
 	}
 	public static void main(String[] args) {
-		new SerialConnectionTest().connect("COM7");
+		new SerialConnectionTest().connect("COM5");
 	}
 }
