@@ -1,4 +1,4 @@
-package android.control;
+ package android.control;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,9 +11,9 @@ import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 
-public class SerialArduinoLEDControl {
+public class SerialArduinoLEDTest {
 	OutputStream out ;
-	public SerialArduinoLEDControl() {
+	public SerialArduinoLEDTest() {
 		
 	}
 	public void connect(String portName) {
@@ -61,11 +61,10 @@ public class SerialArduinoLEDControl {
 			e.printStackTrace();
 		}
 	}
-	//시리얼출력을 위한 필요한 OutputStream리턴
 	public OutputStream getOutput() {
 		return out;
 	}
 	public static void main(String[] args) {
-		new SerialArduinoLEDControl().connect("COM7");
+		new SerialArduinoLEDTest().connect("COM7");
 	}
 }

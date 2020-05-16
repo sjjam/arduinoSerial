@@ -1,4 +1,4 @@
-package android.control;
+package serial.read;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,24 +11,15 @@ import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 
-public class SerialArduinoLEDControl {
-	OutputStream out ;
-	public SerialArduinoLEDControl() {
-		
-	}
-	public void connect(String portName) {
+public class ArduinoSerialReadUsingThread {
+	public static void main(String[] args) {
 		try {
-			//COM포트가 실제 존재하고 사용가능한 상태인지 확인
 			CommPortIdentifier commPortIdentifier = 
-					CommPortIdentifier.getPortIdentifier(portName);
-			//포트가 사용중인지 체크
+					CommPortIdentifier.getPortIdentifier("COM7");
 			if(commPortIdentifier.isCurrentlyOwned()) {
 				System.out.println("포트 사용할 수 없습니다.");
 			}else {
 				System.out.println("포트 사용가능.");
-				//port가 사용 가능하면 포트를 열고 포트객체를 얻어오기
-				//매개변수1 : 포트를 열고 사용하는 프로그램의 이름(문자열)
-				//매개변수2 : 포트를 열고 통신하기 위해서 기다리는 시간(밀리세컨드)
 				CommPort commPort =
 						commPortIdentifier.open("basic_serial",
 								5000);
@@ -41,11 +32,28 @@ public class SerialArduinoLEDControl {
 							SerialPort.STOPBITS_1,
 							SerialPort.PARITY_NONE);
 					InputStream in = serialPort.getInputStream();
-					out = serialPort.getOutputStream();
+					OutputStream out = serialPort.getOutputStream();
 					
-					//데이터를 주고 받는 작업을 여기에
-					//안드로이드에서 입력받은 값을 아두이노로 전송하는 쓰레드 
-					//new SerialArduinoWriterThread(out).start();
+					//Arduino를 통해서 반복해서 들어오는 데이터를 읽을 수 있도록 
+					//코드 작성 - 쓰레드로 처리
+					Thread readThread = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							byte[] buffer = new byte[1024];
+							int len=-1;
+							try {
+								while((len=in.read(buffer))!=-1) {
+									System.out.println(new String(buffer,0,len));
+									Thread.sleep(1000);
+								}
+							}catch(IOException e) {
+								e.printStackTrace();
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+					readThread.start();
 					
 				}else {
 					System.out.println("SerialPort만 작업할 수 있습니다.");
@@ -60,12 +68,5 @@ public class SerialArduinoLEDControl {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	//시리얼출력을 위한 필요한 OutputStream리턴
-	public OutputStream getOutput() {
-		return out;
-	}
-	public static void main(String[] args) {
-		new SerialArduinoLEDControl().connect("COM7");
 	}
 }
